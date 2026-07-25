@@ -454,8 +454,10 @@
 let currentSessionId = null;
 let pollingInterval = null;
 
+const API_KEY = 'dev-key';
+
 async function api(method, path, body) {
-  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  const opts = { method, headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY } };
   if (body) opts.body = JSON.stringify(body);
   const res = await fetch(path, opts);
   return res.json();
