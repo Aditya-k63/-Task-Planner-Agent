@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 
 def router_node(state: AgentState) -> dict:
     """Route to next action. Returns partial state update."""
-    tasks = state.tasks
+    tasks_raw = state.get("tasks", [])
+    from app.state import Task
+    tasks = [Task(**t) if isinstance(t, dict) else t for t in tasks_raw]
 
     if not tasks:
         logger.info("ROUTER: No tasks — done")

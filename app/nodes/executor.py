@@ -61,7 +61,16 @@ def executor_node(state: AgentState) -> dict:
     llm = get_llm()
     from app.tools.registry import registry
 
-    current_task = state.get_current_task()
+    # Get current task safely (state may be plain dict from LangGraph)
+    tasks_raw = state.get("tasks", [])
+    current_task_id = state.get("current_task_id")
+    current_task = None
+    for t in tasks_raw:
+        task = Task(**t) if isinstance(t, dict) else t
+        if task.id == current_task_id:
+            current_task = task
+            break
+
     if current_task is None:
         return {"phase": AgentPhase.ERROR.value, "error": "No current task to execute"}
 

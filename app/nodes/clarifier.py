@@ -20,9 +20,12 @@ def clarifier_resume(state: AgentState, answer: str) -> dict:
     """
     logger.info(f"CLARIFIER: User answered — {answer}")
 
-    clarification = state.pending_clarification
-    if clarification is None:
+    # Get clarification safely (state may be plain dict from LangGraph)
+    clar_raw = state.get("pending_clarification") if isinstance(state, dict) else getattr(state, "pending_clarification", None)
+    if clar_raw is None:
         return {"error": "No pending clarification"}
+
+    clarification = Clarification(**clar_raw) if isinstance(clar_raw, dict) else clar_raw
 
     # Record the answer
     clarification_data = clarification.model_dump()
@@ -39,7 +42,7 @@ def clarifier_resume(state: AgentState, answer: str) -> dict:
     clarification_data["answered_at"] = datetime.now(timezone.utc).isoformat()
 
     # Add to history, clear pending
-    history = list(state.get("clarification_history", []))
+    history = list(state.get("clarification_history", []) if isinstance(state, dict) else getattr(state, "clarification_history", []))
     history.append(clarification_data)
 
     return {
@@ -51,9 +54,10 @@ def clarifier_resume(state: AgentState, answer: str) -> dict:
 
 def get_pending_question(state: AgentState) -> dict | None:
     """Returns the pending clarification for the frontend to render."""
-    c = state.pending_clarification
-    if c is None:
+    clar_raw = state.get("pending_clarification") if isinstance(state, dict) else getattr(state, "pending_clarification", None)
+    if clar_raw is None:
         return None
+    c = Clarification(**clar_raw) if isinstance(clar_raw, dict) else clar_raw
     return {
         "id": c.id,
         "task_id": c.task_id,

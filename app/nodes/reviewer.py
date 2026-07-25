@@ -41,7 +41,16 @@ def reviewer_node(state: AgentState) -> dict:
     logger.info("REVIEWER: Reviewing task completion")
     llm = get_llm()
 
-    current_task = state.get_current_task()
+    # Get current task safely
+    tasks_raw = state.get("tasks", [])
+    current_task_id = state.get("current_task_id")
+    current_task = None
+    for t in tasks_raw:
+        task = Task(**t) if isinstance(t, dict) else t
+        if task.id == current_task_id:
+            current_task = task
+            break
+
     if current_task is None:
         return {"phase": AgentPhase.ERROR.value, "error": "No current task to review"}
 
