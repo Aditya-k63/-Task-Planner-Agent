@@ -16,8 +16,6 @@
     --accent2: #a29bfe;
     --green: #00b894;
     --red: #e17055;
-    --yellow: #fdcb6e;
-    --blue: #74b9ff;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -27,168 +25,111 @@
     min-height: 100vh;
     line-height: 1.6;
   }
-
-  /* --- Header --- */
   .header {
     border-bottom: 1px solid var(--border);
-    padding: 16px 24px;
+    padding: 20px 28px;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     background: var(--surface);
   }
   .header .logo {
-    width: 36px; height: 36px;
+    width: 40px; height: 40px;
     background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 10px;
+    border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     font-weight: 700; font-size: 16px; color: #fff;
   }
-  .header h1 { font-size: 18px; font-weight: 600; }
+  .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
   .header .badge {
     margin-left: auto;
-    padding: 4px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--muted);
-  }
-
-  /* --- Layout --- */
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 24px;
-  }
-
-  /* --- Goal Input --- */
-  .input-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 24px;
-  }
-  .input-section label {
-    display: block;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--muted);
-    margin-bottom: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(108, 92, 231, 0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent2);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  .goal-row {
-    display: flex;
-    gap: 12px;
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px;
   }
+  .input-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin-bottom: 28px;
+  }
+  .input-section label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .goal-row { display: flex; gap: 12px; }
   .goal-row input {
     flex: 1;
     background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
     font-size: 15px;
     color: var(--text);
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s;
   }
   .goal-row input:focus { border-color: var(--accent); }
   .goal-row button {
-    background: var(--accent);
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
     color: #fff;
     border: none;
-    border-radius: 8px;
-    padding: 12px 24px;
+    border-radius: 10px;
+    padding: 14px 28px;
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: all 0.2s;
     white-space: nowrap;
   }
   .goal-row button:hover { opacity: 0.85; }
-  .goal-row button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .goal-row button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* --- Status Bar --- */
   .status-bar {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 16px;
+    padding: 14px 18px;
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    margin-bottom: 24px;
+    border-radius: 12px;
+    margin-bottom: 28px;
     font-size: 13px;
+    font-weight: 500;
   }
   .status-dot {
-    width: 8px; height: 8px;
+    width: 10px; height: 10px;
     border-radius: 50%;
     background: var(--muted);
     flex-shrink: 0;
   }
-  .status-dot.active { background: var(--green); animation: pulse 1.5s infinite; }
-  .status-dot.error { background: var(--red); }
+  .status-dot.active {
+    background: var(--green);
+    animation: pulse 1.5s infinite;
+  }
   .status-dot.done { background: var(--green); }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
+  .status-dot.error { background: var(--red); }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-  /* --- Task List --- */
-  .tasks-section { margin-bottom: 24px; }
-  .tasks-section h2 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
-  }
-  .task-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    transition: border-color 0.2s;
-  }
-  .task-card.active { border-color: var(--accent); }
-  .task-card.completed { border-color: var(--green); opacity: 0.7; }
-  .task-card.failed { border-color: var(--red); opacity: 0.7; }
-  .task-num {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 12px; font-weight: 600;
-    flex-shrink: 0;
-    color: var(--muted);
-  }
-  .task-card.active .task-num { background: var(--accent); color: #fff; border-color: var(--accent); }
-  .task-card.completed .task-num { background: var(--green); color: #fff; border-color: var(--green); }
-  .task-card.failed .task-num { background: var(--red); color: #fff; border-color: var(--red); }
-  .task-info { flex: 1; }
-  .task-desc { font-size: 14px; font-weight: 500; }
-  .task-meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .task-result {
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: var(--surface2);
-    border-radius: 6px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-
-  /* --- Clarification Card --- */
   .clarify-section {
-    margin-bottom: 24px;
+    margin-bottom: 28px;
     animation: slideIn 0.3s ease;
   }
   @keyframes slideIn {
@@ -198,58 +139,53 @@
   .clarify-card {
     background: var(--surface);
     border: 2px solid var(--accent);
-    border-radius: 14px;
+    border-radius: 16px;
     overflow: hidden;
   }
   .clarify-header {
     background: linear-gradient(135deg, var(--accent), #5a4bd1);
-    padding: 16px 20px;
+    padding: 20px 24px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
   .clarify-header .icon {
-    width: 32px; height: 32px;
-    background: rgba(255,255,255,0.15);
-    border-radius: 8px;
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 16px;
+    font-size: 18px;
   }
   .clarify-header .title {
-    font-size: 14px;
-    font-weight: 600;
+    font-size: 15px;
+    font-weight: 700;
     color: #fff;
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-  .clarify-body { padding: 20px; }
+  .clarify-body { padding: 24px; }
   .clarify-question {
-    font-size: 16px;
-    font-weight: 500;
-    margin-bottom: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
     line-height: 1.5;
   }
   .clarify-context {
     font-size: 13px;
     color: var(--muted);
     margin-bottom: 20px;
-    padding: 10px 14px;
+    padding: 14px 16px;
     background: var(--surface2);
-    border-radius: 8px;
-    border-left: 3px solid var(--accent);
+    border-radius: 10px;
+    border-left: 4px solid var(--accent);
+    line-height: 1.6;
   }
-
-  /* --- Options --- */
-  .options-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
+  .options-grid { display: flex; flex-direction: column; gap: 10px; }
   .option-btn {
     background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
@@ -259,128 +195,65 @@
   }
   .option-btn:hover {
     border-color: var(--accent);
-    background: rgba(108, 92, 231, 0.08);
+    background: rgba(108, 92, 231, 0.1);
     transform: translateY(-1px);
   }
-  .option-btn:active {
-    transform: translateY(0);
-  }
+  .option-btn:active { transform: translateY(0); }
   .option-id {
-    width: 30px; height: 30px;
-    border-radius: 8px;
-    background: var(--accent);
+    width: 32px; height: 32px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
     color: #fff;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 700;
-    font-size: 13px;
+    font-weight: 700; font-size: 13px;
     flex-shrink: 0;
     text-transform: uppercase;
   }
   .option-content { flex: 1; }
-  .option-label {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 2px;
-  }
-  .option-desc {
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.4;
-  }
-
-  /* --- Custom Answer --- */
-  .custom-answer {
-    margin-top: 12px;
-    display: flex;
-    gap: 8px;
-  }
+  .option-label { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .option-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .custom-answer { margin-top: 16px; display: flex; gap: 10px; }
   .custom-answer input {
     flex: 1;
     background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
     font-size: 13px;
     color: var(--text);
     outline: none;
   }
   .custom-answer input:focus { border-color: var(--accent); }
   .custom-answer button {
-    background: var(--accent2);
+    background: var(--accent);
     color: #fff;
     border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
+    border-radius: 10px;
+    padding: 12px 20px;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
   }
+  .custom-answer button:hover { opacity: 0.85; }
 
-  /* --- History --- */
-  .history-section {
-    margin-top: 24px;
-  }
-  .history-section h2 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 12px;
-  }
-  .history-item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin-bottom: 6px;
-    font-size: 13px;
-  }
-  .history-item .tool-tag {
-    display: inline-block;
-    padding: 2px 8px;
-    background: var(--surface2);
-    border-radius: 4px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--blue);
-    margin-right: 8px;
-  }
-  .history-item .output {
-    margin-top: 6px;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    white-space: pre-wrap;
-    max-height: 100px;
-    overflow: auto;
-  }
+  .empty-state { text-align: center; padding: 80px 20px; color: var(--muted); }
+  .empty-state .icon { font-size: 64px; margin-bottom: 20px; opacity: 0.4; }
+  .empty-state h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .empty-state p { font-size: 14px; max-width: 400px; margin: 0 auto; }
 
-  /* --- Empty State --- */
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-  }
-  .empty-state .icon { font-size: 48px; margin-bottom: 16px; opacity: 0.3; }
-  .empty-state h3 { font-size: 16px; margin-bottom: 8px; color: var(--text); }
-
-  /* --- Error --- */
   .error-banner {
-    background: rgba(225, 112, 85, 0.1);
-    border: 1px solid var(--red);
-    border-radius: 10px;
-    padding: 14px 18px;
-    margin-bottom: 24px;
+    background: rgba(225, 112, 85, 0.12);
+    border: 1.5px solid var(--red);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
     color: var(--red);
     font-size: 14px;
   }
-
-  /* --- Responsive --- */
   @media (max-width: 600px) {
+    .container { padding: 20px 16px; }
     .goal-row { flex-direction: column; }
-    .container { padding: 16px; }
+    .goal-row button { width: 100%; }
   }
 </style>
 </head>
@@ -393,7 +266,6 @@
 </div>
 
 <div class="container">
-  <!-- Goal Input -->
   <div class="input-section">
     <label>Goal</label>
     <div class="goal-row">
@@ -402,22 +274,13 @@
     </div>
   </div>
 
-  <!-- Status -->
   <div id="statusBar" class="status-bar" style="display:none">
     <div class="status-dot" id="statusDot"></div>
     <span id="statusText">Initializing...</span>
   </div>
 
-  <!-- Error -->
   <div id="errorBanner" class="error-banner" style="display:none"></div>
 
-  <!-- Tasks -->
-  <div id="tasksSection" class="tasks-section" style="display:none">
-    <h2>Tasks</h2>
-    <div id="taskList"></div>
-  </div>
-
-  <!-- Clarification -->
   <div id="clarifySection" class="clarify-section" style="display:none">
     <div class="clarify-card">
       <div class="clarify-header">
@@ -436,13 +299,6 @@
     </div>
   </div>
 
-  <!-- Execution History -->
-  <div id="historySection" class="history-section" style="display:none">
-    <h2>Execution Log</h2>
-    <div id="historyList"></div>
-  </div>
-
-  <!-- Empty State -->
   <div id="emptyState" class="empty-state">
     <div class="icon">🧠</div>
     <h3>Enter a goal to get started</h3>
@@ -453,7 +309,6 @@
 <script>
 let currentSessionId = null;
 let pollingInterval = null;
-
 const API_KEY = 'dev-key';
 
 async function api(method, path, body) {
@@ -464,12 +319,9 @@ async function api(method, path, body) {
 }
 
 function setStatus(text, type) {
-  const bar = document.getElementById('statusBar');
-  const dot = document.getElementById('statusDot');
-  const txt = document.getElementById('statusText');
-  bar.style.display = 'flex';
-  dot.className = 'status-dot ' + type;
-  txt.textContent = text;
+  document.getElementById('statusBar').style.display = 'flex';
+  document.getElementById('statusDot').className = 'status-dot ' + type;
+  document.getElementById('statusText').textContent = text;
 }
 
 function showError(msg) {
@@ -478,37 +330,13 @@ function showError(msg) {
   el.textContent = msg;
 }
 
-function renderTasks(tasks, currentId) {
-  const section = document.getElementById('tasksSection');
-  const list = document.getElementById('taskList');
-  if (!tasks || tasks.length === 0) { section.style.display = 'none'; return; }
-  section.style.display = 'block';
-  list.innerHTML = tasks.map((t, i) => {
-    let cls = '';
-    if (t.id === currentId) cls = 'active';
-    else if (t.status === 'completed') cls = 'completed';
-    else if (t.status === 'failed') cls = 'failed';
-    const statusIcon = t.status === 'completed' ? '✓' : t.status === 'failed' ? '✗' : (i + 1);
-    return `<div class="task-card ${cls}">
-      <div class="task-num">${statusIcon}</div>
-      <div class="task-info">
-        <div class="task-desc">${t.description}</div>
-        <div class="task-meta">${t.priority} priority · ${t.status} ${t.dependencies.length ? '· deps: ' + t.dependencies.join(', ') : ''}</div>
-        ${t.result ? '<div class="task-result">' + t.result + '</div>' : ''}
-        ${t.error ? '<div class="task-result" style="color:var(--red)">' + t.error + '</div>' : ''}
-      </div>
-    </div>`;
-  }).join('');
-}
-
 function renderClarification(data) {
   const section = document.getElementById('clarifySection');
   if (!data || !data.pending) { section.style.display = 'none'; return; }
   section.style.display = 'block';
   document.getElementById('clarifyQuestion').textContent = data.question;
   document.getElementById('clarifyContext').textContent = data.context;
-  const grid = document.getElementById('optionsGrid');
-  grid.innerHTML = data.options.map(o =>
+  document.getElementById('optionsGrid').innerHTML = data.options.map(o =>
     `<div class="option-btn" onclick="submitAnswer('${o.id}')">
       <div class="option-id">${o.id}</div>
       <div class="option-content">
@@ -520,20 +348,6 @@ function renderClarification(data) {
   document.getElementById('customAnswer').value = '';
 }
 
-function renderHistory(history) {
-  const section = document.getElementById('historySection');
-  const list = document.getElementById('historyList');
-  if (!history || history.length === 0) { section.style.display = 'none'; return; }
-  section.style.display = 'block';
-  list.innerHTML = history.map(h =>
-    `<div class="history-item">
-      <span class="tool-tag">${h.tool || h.action}</span>
-      ${h.input ? '<span>→ ' + h.input.substring(0, 80) + '</span>' : ''}
-      ${h.output ? '<div class="output">' + h.output.substring(0, 300) + '</div>' : ''}
-    </div>`
-  ).join('');
-}
-
 function updateUI(data) {
   document.getElementById('emptyState').style.display = 'none';
   document.getElementById('errorBanner').style.display = 'none';
@@ -541,17 +355,15 @@ function updateUI(data) {
   if (data.error) showError(data.error);
 
   const phase = data.phase || 'idle';
-  const phaseLabels = {
-    idle: 'Ready', planning: 'Planning tasks...', executing: 'Executing...',
-    clarifying: 'Waiting for your input...', reviewing: 'Reviewing...',
-    done: 'All tasks completed!', error: 'Error occurred'
+  const labels = {
+    idle: 'Ready', planning: 'Thinking...', executing: 'Working...',
+    clarifying: 'Waiting for your input...', reviewing: 'Checking...',
+    done: 'Done!', error: 'Error'
   };
-  const phaseType = { idle: '', planning: 'active', executing: 'active', clarifying: 'active', reviewing: 'active', done: 'done', error: 'error' };
-  setStatus(phaseLabels[phase] || phase, phaseType[phase] || '');
+  const types = { idle: '', planning: 'active', executing: 'active', clarifying: 'active', reviewing: 'active', done: 'done', error: 'error' };
+  setStatus(labels[phase] || phase, types[phase] || '');
 
-  renderTasks(data.tasks, data.current_task_id);
   renderClarification(data.pending_clarification ? { pending: true, ...data.pending_clarification } : null);
-  renderHistory(data.execution_history);
 }
 
 async function startSession() {
@@ -559,7 +371,8 @@ async function startSession() {
   if (!goal) return;
   document.getElementById('startBtn').disabled = true;
   document.getElementById('emptyState').style.display = 'none';
-  setStatus('Planning tasks...', 'active');
+  document.getElementById('clarifySection').style.display = 'none';
+  setStatus('Thinking...', 'active');
 
   try {
     const data = await api('POST', '/start', { goal });
@@ -575,13 +388,13 @@ async function startSession() {
 
 async function submitAnswer(answer) {
   if (!currentSessionId) return;
-  setStatus('Processing your answer...', 'active');
+  setStatus('Working on it...', 'active');
   document.getElementById('clarifySection').style.display = 'none';
   try {
     const data = await api('POST', '/clarify', { session_id: currentSessionId, answer });
     updateUI(data);
   } catch (e) {
-    showError('Failed to submit answer: ' + e.message);
+    showError('Failed: ' + e.message);
   }
 }
 
@@ -613,7 +426,6 @@ function stopPolling() {
   if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
 }
 
-// Handle Enter key on goal input
 document.getElementById('goalInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') startSession();
 });
