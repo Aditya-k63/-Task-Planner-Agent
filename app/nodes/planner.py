@@ -28,30 +28,30 @@ RULES:
 6. Do NOT ask clarifying questions — just make reasonable assumptions.
 
 RESPOND WITH ONLY valid JSON (no markdown, no explanation):
-{
+{{
   "tasks": [
-    {
+    {{
       "description": "string — concrete action",
       "priority": "low|medium|high|critical",
-      "dependencies": ["task_id_1", ...],
+      "dependencies": ["task_id_1"],
       "substeps": ["step1", "step2"]
-    }
+    }}
   ]
-}
+}}
 
 Available tools: {tools}
 """
 
-PLANNER_RESPONSE_SCHEMA = """{
+PLANNER_RESPONSE_SCHEMA = """{{
   "tasks": [
-    {
+    {{
       "description": "string",
       "priority": "low|medium|high|critical",
       "dependencies": [],
       "substeps": []
-    }
+    }}
   ]
-}"""
+}}"""
 
 
 def planner_node(state: AgentState) -> dict:
