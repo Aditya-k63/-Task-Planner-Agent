@@ -57,6 +57,17 @@ PLANNER_RESPONSE_SCHEMA = """{
 def planner_node(state: AgentState) -> dict:
     """Break goal into tasks. Returns partial state update."""
     logger.info("PLANNER: Breaking goal into tasks")
+    try:
+        return _planner_node_inner(state)
+    except Exception as e:
+        logger.error(f"PLANNER: Unhandled exception: {type(e).__name__}: {e}")
+        return {
+            "phase": AgentPhase.ERROR.value,
+            "error": f"Planner crashed: {type(e).__name__}: {e}",
+        }
+
+
+def _planner_node_inner(state: AgentState) -> dict:
     llm = get_llm()
 
     from app.tools.registry import registry
