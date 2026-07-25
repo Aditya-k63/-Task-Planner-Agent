@@ -21,5 +21,5 @@ def test_index_returns_html(client):
 
 
 def test_status_404(client):
-    resp = client.get("/status/nonexistent")
+    resp = client.get("/status/nonexistent", headers={"X-API-Key": "test-key"})
     assert resp.status_code == 404

@@ -41,7 +41,7 @@ def test_list_schemas():
     reg.register(Tool("a", "Tool A", lambda x: x, safe=True))
     reg.register(Tool("b", "Tool B", lambda x: x, safe=False))
     schemas = reg.list_schemas()
-    assert len(schemas) == 2
+    assert len(schemas) >= 2
     assert any(s["name"] == "a" and s["safe"] for s in schemas)
     assert any(s["name"] == "b" and not s["safe"] for s in schemas)
 

@@ -128,6 +128,10 @@ class AgentState(dict):
         return Clarification(**v) if isinstance(v, dict) else v
 
     @property
+    def error(self) -> str | None:
+        return self.get("error")
+
+    @property
     def phase(self) -> AgentPhase:
         return AgentPhase(self["phase"])
 
