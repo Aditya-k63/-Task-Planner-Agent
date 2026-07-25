@@ -7,6 +7,7 @@ LLM receives the goal + available tools, returns a structured task plan.
 from __future__ import annotations
 
 import json
+import re
 import logging
 from langchain_core.messages import HumanMessage, SystemMessage
 
@@ -69,34 +70,48 @@ def planner_node(state: AgentState) -> dict:
 
     response = llm.invoke(messages)
     raw = response.content.strip()
+    logger.info(f"PLANNER raw response (first 500): {raw[:500]}")
 
     # Strip markdown code fences if present
     if "```" in raw:
         parts = raw.split("```")
         if len(parts) >= 3:
             raw = parts[1].strip()
-            # Remove optional language tag (json, etc.)
             if raw.startswith(("json", "JSON")):
                 raw = raw[4:].strip()
-            # Remove trailing content after last fence
             if raw.endswith("```"):
                 raw = raw[:-3].strip()
+        logger.info(f"PLANNER after fence strip: {raw[:300]}")
 
     # Extract JSON object if surrounded by other text
     start = raw.find("{")
     end = raw.rfind("}")
+    logger.info(f"PLANNER JSON search: start={start}, end={end}")
     if start != -1 and end != -1 and end > start:
         raw = raw[start:end + 1]
+        logger.info(f"PLANNER extracted JSON: {raw[:300]}")
 
     try:
         data = json.loads(raw)
         tasks_raw = data.get("tasks", [])
     except json.JSONDecodeError:
         logger.error(f"Planner returned invalid JSON: {raw[:300]}")
-        return {
-            "phase": AgentPhase.ERROR.value,
-            "error": f"Planner returned invalid JSON: {raw[:300]}",
-        }
+        # Fallback: try to extract tasks array via regex
+        tasks_match = re.search(r'"tasks"\s*:\s*(\[.*?\])', raw, re.DOTALL)
+        if tasks_match:
+            try:
+                tasks_raw = json.loads(tasks_match.group(1))
+                logger.info(f"PLANNER: Extracted tasks via regex fallback")
+            except json.JSONDecodeError:
+                return {
+                    "phase": AgentPhase.ERROR.value,
+                    "error": f"Planner returned invalid JSON: {raw[:300]}",
+                }
+        else:
+            return {
+                "phase": AgentPhase.ERROR.value,
+                "error": f"Planner returned invalid JSON: {raw[:300]}",
+            }
 
     tasks: list[Task] = []
     for i, t in enumerate(tasks_raw):
