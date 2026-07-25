@@ -106,9 +106,10 @@ Did this task succeed? Respond with JSON only."""),
     logger.info(f"REVIEWER: pass={passed}, score={score:.2f}, reason={reason[:100]}")
 
     # Update task status
-    tasks = [t.model_dump() if hasattr(t, 'model_dump') else t for t in state["tasks"]]
+    tasks = state.get("tasks", [])
     for i, t in enumerate(tasks):
-        if t["id"] == current_task.id:
+        tid = t.get("id") if isinstance(t, dict) else t.id
+        if tid == current_task.id:
             if passed:
                 tasks[i]["status"] = TaskStatus.COMPLETED.value
                 tasks[i]["result"] = reason
@@ -117,14 +118,14 @@ Did this task succeed? Respond with JSON only."""),
                 tasks[i]["error"] = reason
             break
 
-    return {
-        "tasks": tasks,
-        "execution_history": state["execution_history"] + [
-            Step(
-                task_id=current_task.id,
-                action="review",
-                output=f"pass={passed} score={score:.2f} reason={reason}",
-                success=passed,
-            ).model_dump()
-        ],
-    }
+    history = state.get("execution_history", [])
+    history.append(Step(
+        task_id=current_task.id,
+        action="review",
+        output=f"pass={passed} score={score:.2f} reason={reason}",
+        success=passed,
+    ).model_dump())
+
+    state["tasks"] = tasks
+    state["execution_history"] = history
+    return state

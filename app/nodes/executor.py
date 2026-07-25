@@ -70,7 +70,9 @@ def _executor_inner(state: dict) -> dict:
 
     if current_task is None:
         logger.error(f"Task lookup failed. Available: {[t.get('id') if isinstance(t, dict) else t.id for t in tasks_raw]}, looking for: {current_task_id}")
-        return {"phase": "error", "error": f"No task found with id={current_task_id}"}
+        state["phase"] = "error"
+        state["error"] = f"No task found with id={current_task_id}"
+        return state
 
     tool_schemas = json.dumps(registry.list_schemas(), indent=2)
     system_msg = EXECUTOR_SYSTEM.format(
@@ -111,7 +113,8 @@ def _executor_inner(state: dict) -> dict:
         if raw.upper().startswith("DONE:"):
             summary = raw[5:].strip()
             new_history.append(Step(task_id=current_task.id, action="completed", output=summary).model_dump())
-            return {"execution_history": new_history}
+            state["execution_history"] = new_history
+            return state
 
         # Check for FAILED
         if raw.upper().startswith("FAILED:"):
@@ -123,7 +126,9 @@ def _executor_inner(state: dict) -> dict:
             updated_tasks = [t for t in tasks_raw if (t.get("id") if isinstance(t, dict) else t.id) != current_task.id]
             updated_tasks.append(updated_task)
             new_history.append(Step(task_id=current_task.id, action="failed", output=reason, success=False).model_dump())
-            return {"tasks": updated_tasks, "execution_history": new_history}
+            state["tasks"] = updated_tasks
+            state["execution_history"] = new_history
+            return state
 
         # Check for CLARIFY
         if raw.upper().startswith("CLARIFY:"):
@@ -138,10 +143,9 @@ def _executor_inner(state: dict) -> dict:
                     options=options,
                 )
                 logger.info(f"EXECUTOR: Requesting clarification — {clarification.question[:80]}")
-                return {
-                    "pending_clarification": clarification.model_dump(),
-                    "phase": AgentPhase.CLARIFYING.value,
-                }
+                state["pending_clarification"] = clarification.model_dump()
+                state["phase"] = AgentPhase.CLARIFYING.value
+                return state
             except (json.JSONDecodeError, Exception) as e:
                 logger.error(f"Failed to parse CLARIFY: {e}")
                 messages.append(AIMessage(content=f"Invalid CLARIFY format. Use valid JSON. Error: {e}"))
@@ -178,4 +182,5 @@ def _executor_inner(state: dict) -> dict:
 
     logger.warning("EXECUTOR: Max steps reached")
     new_history.append(Step(task_id=current_task.id, action="max_steps_reached", output="Execution limit reached").model_dump())
-    return {"execution_history": new_history}
+    state["execution_history"] = new_history
+    return state

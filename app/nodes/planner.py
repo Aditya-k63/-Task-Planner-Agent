@@ -162,9 +162,9 @@ def _planner_node_inner(state: AgentState) -> dict:
     first_task = tasks[0]
     logger.info(f"PLANNER: Created {len(tasks)} tasks, starting with '{first_task.description[:50]}'")
 
-    return {
-        "tasks": [t.model_dump() for t in tasks],
-        "current_task_id": first_task.id,
-        "phase": AgentPhase.EXECUTING.value,
-        "retry_count": 0,
-    }
+    # Mutate state directly — LangGraph passes state by reference
+    state["tasks"] = [t.model_dump() for t in tasks]
+    state["current_task_id"] = first_task.id
+    state["phase"] = AgentPhase.EXECUTING.value
+    state["retry_count"] = 0
+    return state
