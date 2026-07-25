@@ -3,18 +3,15 @@ LangGraph StateGraph — wires all nodes into an agent loop.
 
 Flow:
   START → planner → router → (executor → reviewer → router)* → done
-                                        ↓
-                                  clarifier → executor
 """
 
 from __future__ import annotations
 
 import logging
-from typing import Literal
+from typing import Any
 
 from langgraph.graph import StateGraph, END
 
-from app.state import AgentState, AgentPhase
 from app.nodes.planner import planner_node
 from app.nodes.executor import executor_node
 from app.nodes.reviewer import reviewer_node
@@ -22,66 +19,54 @@ from app.nodes.router import router_node
 
 logger = logging.getLogger(__name__)
 
+# Use plain dict as state — LangGraph 1.x handles dicts better than subclasses
+StateType = dict[str, Any]
+
 
 # --- Edge conditions ---
 
-def after_planner(state: AgentState) -> Literal["router", "__end__"]:
+def after_planner(state: StateType) -> str:
     phase = state.get("phase", "")
     logger.info(f"after_planner: phase={phase}")
-    if phase == AgentPhase.ERROR.value:
+    if phase == "error":
         return "__end__"
     return "router"
 
 
-def after_router(state: AgentState) -> Literal["executor", "planner", "__end__"]:
+def after_router(state: StateType) -> str:
     phase = state.get("phase", "")
     logger.info(f"after_router: phase={phase}")
-    try:
-        p = AgentPhase(phase)
-    except ValueError:
+    if phase == "done":
         return "__end__"
-    if p == AgentPhase.DONE:
+    if phase == "error":
         return "__end__"
-    if p == AgentPhase.ERROR:
-        return "__end__"
-    if p == AgentPhase.PLANNING:
+    if phase == "planning":
         return "planner"
     return "executor"
 
 
-def after_executor(state: AgentState) -> Literal["reviewer", "__end__"]:
+def after_executor(state: StateType) -> str:
     phase = state.get("phase", "")
     logger.info(f"after_executor: phase={phase}")
-    try:
-        p = AgentPhase(phase)
-    except ValueError:
+    if phase == "clarifying":
         return "__end__"
-    if p == AgentPhase.CLARIFYING:
-        return "__end__"
-    if p == AgentPhase.ERROR:
+    if phase == "error":
         return "__end__"
     return "reviewer"
 
 
-def after_reviewer(state: AgentState) -> Literal["router", "__end__"]:
+def after_reviewer(state: StateType) -> str:
     phase = state.get("phase", "")
     logger.info(f"after_reviewer: phase={phase}")
-    if phase == AgentPhase.ERROR.value:
+    if phase == "error":
         return "__end__"
     return "router"
-
-
-def after_clarifier(state: AgentState) -> Literal["executor", "__end__"]:
-    phase = state.get("phase", "")
-    if phase == AgentPhase.ERROR.value:
-        return "__end__"
-    return "executor"
 
 
 # --- Build graph ---
 
 def build_graph() -> StateGraph:
-    graph = StateGraph(AgentState)
+    graph = StateGraph(dict)
 
     # Nodes
     graph.add_node("planner", planner_node)
@@ -96,10 +81,6 @@ def build_graph() -> StateGraph:
     graph.add_conditional_edges("router", after_router, {"executor": "executor", "planner": "planner", "__end__": END})
     graph.add_conditional_edges("executor", after_executor, {"reviewer": "reviewer", "__end__": END})
     graph.add_conditional_edges("reviewer", after_reviewer, {"router": "router", "__end__": END})
-
-    # Clarifier is handled via API — user answers, then executor is re-invoked
-    # We don't wire clarifier into the graph as a node — it's an external interrupt
-    # The graph pauses at executor (phase=CLARIFYING), API resumes it
 
     return graph
 

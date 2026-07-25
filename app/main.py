@@ -88,15 +88,19 @@ async def start(req: StartRequest, request: Request):
     try:
         from app.graph import get_graph
         graph = get_graph()
-        initial_state = session.state
+        # Convert AgentState to plain dict for LangGraph
+        initial_state = dict(session.state)
         result = graph.invoke(initial_state)
-        logger.info(f"Graph result keys: {list(result.keys()) if isinstance(result, dict) else type(result)}")
+        logger.info(f"Graph result type: {type(result)}, keys: {list(result.keys()) if isinstance(result, dict) else 'N/A'}")
         # Update session state with graph result
         if isinstance(result, dict):
             for k, v in result.items():
                 session.state[k] = v
+        logger.info(f"After merge: tasks={len(session.state.get('tasks', []))}, phase={session.state.get('phase')}")
     except Exception as e:
         logger.error(f"Planner failed: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
         session.state["phase"] = AgentPhase.ERROR.value
         session.state["error"] = str(e)
 
