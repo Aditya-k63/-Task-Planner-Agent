@@ -12,7 +12,7 @@ import logging
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.state import AgentState, Task, TaskStatus, TaskPriority, AgentPhase
-from app.llm import get_llm
+from app.llm import get_llm, invoke_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +83,7 @@ def _planner_node_inner(state: AgentState) -> dict:
     ]
 
     logger.info("PLANNER: step 4 - invoke llm")
-    response = llm.invoke(messages)
+    response = invoke_with_retry(llm, messages)
 
     logger.info("PLANNER: step 5 - extract content")
     content = response.content

@@ -12,7 +12,7 @@ import logging
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage, ToolMessage
 
 from app.state import Task, TaskStatus, AgentPhase, Clarification, ClarificationOption, Step
-from app.llm import get_llm
+from app.llm import get_llm, invoke_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +107,7 @@ def _executor_inner(state: dict) -> dict:
 
     while steps_taken < max_steps:
         messages.append(HumanMessage(content=f"Execute the task. ({steps_taken + 1}/{max_steps} steps remaining)"))
-        response = llm.invoke(messages)
+        response = invoke_with_retry(llm, messages)
         raw = response.content
         # Handle list content
         if isinstance(raw, list):

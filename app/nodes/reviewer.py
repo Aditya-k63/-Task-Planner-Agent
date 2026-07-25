@@ -11,7 +11,7 @@ import logging
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from app.state import AgentState, Task, TaskStatus, AgentPhase, Step
-from app.llm import get_llm
+from app.llm import get_llm, invoke_with_retry
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,7 @@ Execution history:
 Did this task succeed? Respond with JSON only."""),
     ]
 
-    response = llm.invoke(messages)
+    response = invoke_with_retry(llm, messages)
     raw = response.content.strip()
 
     # Strip markdown fences
