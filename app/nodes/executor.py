@@ -34,6 +34,13 @@ RULES:
 5. If the task cannot be completed, respond with:
    FAILED: <reason>
 
+CLARIFICATION RULES — READ CAREFULLY:
+- NEVER ask for clarification on simple factual or calculation tasks (e.g. math, unit conversion, definitions, lookups). Just answer or use a tool.
+- NEVER ask for clarification when you already have enough information to proceed. Just execute.
+- ONLY use CLARIFY when the task is genuinely ambiguous, has multiple valid interpretations, or is missing critical information that prevents you from taking ANY action.
+- If you can make a reasonable assumption, do so — don't ask.
+- Default to acting, not asking.
+
 Current task: {task_description}
 Goal context: {goal}
 """
