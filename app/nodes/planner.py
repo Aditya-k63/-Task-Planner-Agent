@@ -135,6 +135,13 @@ def _planner_node_inner(state: AgentState) -> dict:
 
     tasks: list[Task] = []
     for i, t in enumerate(tasks_raw):
+        if not isinstance(t, dict):
+            logger.warning(f"PLANNER: Skipping non-dict task item: {type(t)}: {str(t)[:100]}")
+            continue
+        desc = t.get("description", "")
+        if not desc or not isinstance(desc, str):
+            logger.warning(f"PLANNER: Skipping task with no valid description: {t}")
+            continue
         priority_str = t.get("priority", "medium")
         try:
             priority = TaskPriority(priority_str)
@@ -142,10 +149,10 @@ def _planner_node_inner(state: AgentState) -> dict:
             priority = TaskPriority.MEDIUM
 
         task = Task(
-            description=t["description"],
+            description=desc,
             priority=priority,
-            dependencies=t.get("dependencies", []),
-            substeps=t.get("substeps", []),
+            dependencies=[d for d in t.get("dependencies", []) if isinstance(d, str)],
+            substeps=[s for s in t.get("substeps", []) if isinstance(s, str)],
             status=TaskStatus.PENDING,
         )
         tasks.append(task)
