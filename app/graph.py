@@ -42,10 +42,11 @@ def after_router(state: AgentState) -> Literal["executor", "planner", "__end__"]
     return "executor"
 
 
-def after_executor(state: AgentState) -> Literal["reviewer", "clarifier", "__end__"]:
+def after_executor(state: AgentState) -> Literal["reviewer", "__end__"]:
     phase = AgentPhase(state["phase"])
     if phase == AgentPhase.CLARIFYING:
-        return "clarifier"
+        # Graph pauses — clarifier is handled externally via API
+        return "__end__"
     if phase == AgentPhase.ERROR:
         return "__end__"
     return "reviewer"
