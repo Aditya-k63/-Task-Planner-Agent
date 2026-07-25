@@ -242,6 +242,7 @@
 let sessionId = null;
 let polling = null;
 let awaitingClarify = false;
+let resultShown = false;
 const API_KEY = 'dev-key';
 
 function api(method, path, body) {
@@ -296,6 +297,7 @@ function addClarify(data) {
 }
 
 function showResult(data) {
+  if (resultShown) return;
   const history = data.execution_history || [];
   let answer = '';
   for (let i = history.length - 1; i >= 0; i--) {
@@ -304,7 +306,10 @@ function showResult(data) {
       break;
     }
   }
-  if (answer) addAgentMsg(answer);
+  if (answer) {
+    resultShown = true;
+    addAgentMsg(answer);
+  }
 }
 
 function update(data) {
@@ -327,6 +332,7 @@ async function send() {
   if (!text) return;
   input.value = '';
   addUserMsg(text);
+  resultShown = false;
   document.getElementById('sendBtn').disabled = true;
   const think = addThinking('Thinking...');
 
