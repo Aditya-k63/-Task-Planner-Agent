@@ -34,34 +34,46 @@ def after_planner(state: AgentState) -> Literal["router", "__end__"]:
 
 
 def after_router(state: AgentState) -> Literal["executor", "planner", "__end__"]:
-    phase = AgentPhase(state["phase"])
-    if phase == AgentPhase.DONE:
+    phase = state.get("phase", "")
+    logger.info(f"after_router: phase={phase}")
+    try:
+        p = AgentPhase(phase)
+    except ValueError:
         return "__end__"
-    if phase == AgentPhase.ERROR:
+    if p == AgentPhase.DONE:
         return "__end__"
-    if phase == AgentPhase.PLANNING:
+    if p == AgentPhase.ERROR:
+        return "__end__"
+    if p == AgentPhase.PLANNING:
         return "planner"
     return "executor"
 
 
 def after_executor(state: AgentState) -> Literal["reviewer", "__end__"]:
-    phase = AgentPhase(state["phase"])
-    if phase == AgentPhase.CLARIFYING:
-        # Graph pauses — clarifier is handled externally via API
+    phase = state.get("phase", "")
+    logger.info(f"after_executor: phase={phase}")
+    try:
+        p = AgentPhase(phase)
+    except ValueError:
         return "__end__"
-    if phase == AgentPhase.ERROR:
+    if p == AgentPhase.CLARIFYING:
+        return "__end__"
+    if p == AgentPhase.ERROR:
         return "__end__"
     return "reviewer"
 
 
 def after_reviewer(state: AgentState) -> Literal["router", "__end__"]:
-    if state["phase"] == AgentPhase.ERROR.value:
+    phase = state.get("phase", "")
+    logger.info(f"after_reviewer: phase={phase}")
+    if phase == AgentPhase.ERROR.value:
         return "__end__"
     return "router"
 
 
 def after_clarifier(state: AgentState) -> Literal["executor", "__end__"]:
-    if state["phase"] == AgentPhase.ERROR.value:
+    phase = state.get("phase", "")
+    if phase == AgentPhase.ERROR.value:
         return "__end__"
     return "executor"
 

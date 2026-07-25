@@ -69,7 +69,16 @@ def planner_node(state: AgentState) -> dict:
     ]
 
     response = llm.invoke(messages)
-    raw = response.content.strip()
+    # Handle both string and list content formats
+    content = response.content
+    if isinstance(content, list):
+        # Extract text from content blocks
+        raw = " ".join(
+            block.get("text", "") if isinstance(block, dict) else str(block)
+            for block in content
+        ).strip()
+    else:
+        raw = str(content).strip()
     logger.info(f"PLANNER raw response (first 500): {raw[:500]}")
 
     # Strip markdown code fences if present
