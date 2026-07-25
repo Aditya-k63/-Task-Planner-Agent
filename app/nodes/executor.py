@@ -58,6 +58,17 @@ RESPOND WITH ONLY valid JSON:
 def executor_node(state: AgentState) -> dict:
     """Execute the current task. Returns partial state update."""
     logger.info("EXECUTOR: Starting task execution")
+    try:
+        return _executor_inner(state)
+    except Exception as e:
+        logger.error(f"EXECUTOR: Unhandled exception: {type(e).__name__}: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"phase": "error", "error": f"Executor crashed: {type(e).__name__}: {e}"}
+
+
+def _executor_inner(state: AgentState) -> dict:
+    logger.info(f"EXECUTOR: state keys={list(state.keys())}, current_task_id={state.get('current_task_id')}")
     llm = get_llm()
     from app.tools.registry import registry
 
