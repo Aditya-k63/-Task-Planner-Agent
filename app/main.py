@@ -88,11 +88,11 @@ async def start(req: StartRequest, request: Request):
     try:
         from app.graph import get_graph
         graph = get_graph()
-        # Convert AgentState to plain dict for LangGraph
+        # Convert to plain dict
         initial_state = dict(session.state)
+        logger.info(f"BEFORE graph.invoke: tasks={len(initial_state.get('tasks', []))}, phase={initial_state.get('phase')}")
         result = graph.invoke(initial_state)
-        logger.info(f"Graph result type: {type(result)}, keys: {list(result.keys()) if isinstance(result, dict) else 'N/A'}")
-        # Update session state with graph result
+        logger.info(f"AFTER graph.invoke: type={type(result)}, tasks={len(result.get('tasks', [])) if isinstance(result, dict) else 'N/A'}, phase={result.get('phase') if isinstance(result, dict) else 'N/A'}")
         if isinstance(result, dict):
             for k, v in result.items():
                 session.state[k] = v

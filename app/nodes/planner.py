@@ -167,4 +167,5 @@ def _planner_node_inner(state: AgentState) -> dict:
     state["current_task_id"] = first_task.id
     state["phase"] = AgentPhase.EXECUTING.value
     state["retry_count"] = 0
+    logger.info(f"PLANNER: Returning state with {len(state['tasks'])} tasks, phase={state['phase']}")
     return state
