@@ -80,7 +80,7 @@ def build_graph() -> StateGraph:
 
     graph.add_conditional_edges("planner", after_planner, {"router": "router", "__end__": END})
     graph.add_conditional_edges("router", after_router, {"executor": "executor", "planner": "planner", "__end__": END})
-    graph.add_conditional_edges("executor", after_executor, {"reviewer": "reviewer", "clarifier": "clarifier", "__end__": END})
+    graph.add_conditional_edges("executor", after_executor, {"reviewer": "reviewer", "__end__": END})
     graph.add_conditional_edges("reviewer", after_reviewer, {"router": "router", "__end__": END})
 
     # Clarifier is handled via API — user answers, then executor is re-invoked
