@@ -22,289 +22,200 @@
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background: var(--bg);
     color: var(--text);
-    min-height: 100vh;
-    line-height: 1.6;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
+
   .header {
     border-bottom: 1px solid var(--border);
-    padding: 20px 28px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    background: var(--surface);
-  }
-  .header .logo {
-    width: 40px; height: 40px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    border-radius: 12px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 16px; color: #fff;
-  }
-  .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
-  .header .badge {
-    margin-left: auto;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-    background: rgba(108, 92, 231, 0.15);
-    border: 1px solid var(--accent);
-    color: var(--accent2);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 32px 24px;
-  }
-  .input-section {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 28px;
-    margin-bottom: 28px;
-  }
-  .input-section label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--muted);
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-  }
-  .goal-row { display: flex; gap: 12px; }
-  .goal-row input {
-    flex: 1;
-    background: var(--surface2);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 14px 18px;
-    font-size: 15px;
-    color: var(--text);
-    outline: none;
-    transition: all 0.2s;
-  }
-  .goal-row input:focus { border-color: var(--accent); }
-  .goal-row button {
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 14px 28px;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-  .goal-row button:hover { opacity: 0.85; }
-  .goal-row button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  .status-bar {
+    padding: 14px 20px;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 14px 18px;
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 28px;
-    font-size: 13px;
-    font-weight: 500;
-  }
-  .status-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--muted);
     flex-shrink: 0;
   }
-  .status-dot.active {
-    background: var(--green);
-    animation: pulse 1.5s infinite;
+  .header .logo {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff;
   }
-  .status-dot.done { background: var(--green); }
-  .status-dot.error { background: var(--red); }
-  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .header h1 { font-size: 16px; font-weight: 600; }
 
-  .clarify-section {
-    margin-bottom: 28px;
-    animation: slideIn 0.3s ease;
+  .chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(12px); }
+
+  .msg {
+    max-width: 720px;
+    width: 100%;
+    margin: 0 auto;
+    animation: fadeIn 0.2s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .clarify-card {
+
+  .msg-user {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .msg-user .bubble {
+    background: var(--accent);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 16px 16px 4px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    max-width: 80%;
+  }
+
+  .msg-agent {
+    display: flex;
+    justify-content: flex-start;
+  }
+  .msg-agent .bubble {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 14px 18px;
+    border-radius: 16px 16px 16px 4px;
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 80%;
+    color: var(--text);
+  }
+
+  .msg-thinking .bubble {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  .clarify-bubble {
     background: var(--surface);
     border: 2px solid var(--accent);
     border-radius: 16px;
-    overflow: hidden;
+    padding: 20px;
+    max-width: 500px;
   }
-  .clarify-header {
-    background: linear-gradient(135deg, var(--accent), #5a4bd1);
-    padding: 20px 24px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .clarify-header .icon {
-    width: 36px; height: 36px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-  }
-  .clarify-header .title {
+  .clarify-q {
     font-size: 15px;
-    font-weight: 700;
-    color: #fff;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  .clarify-body { padding: 24px; }
-  .clarify-question {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 12px;
+    font-weight: 600;
+    margin-bottom: 14px;
     line-height: 1.5;
   }
-  .clarify-context {
-    font-size: 13px;
+  .clarify-ctx {
+    font-size: 12px;
     color: var(--muted);
-    margin-bottom: 20px;
-    padding: 14px 16px;
+    margin-bottom: 16px;
+    padding: 10px 12px;
     background: var(--surface2);
-    border-radius: 10px;
-    border-left: 4px solid var(--accent);
-    line-height: 1.6;
+    border-radius: 8px;
+    border-left: 3px solid var(--accent);
   }
-  .options-grid { display: flex; flex-direction: column; gap: 10px; }
-  .option-btn {
+  .clarify-options { display: flex; flex-direction: column; gap: 8px; }
+  .clarify-opt {
     background: var(--surface2);
     border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 18px;
+    border-radius: 10px;
+    padding: 12px 14px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.15s;
     display: flex;
     align-items: flex-start;
-    gap: 14px;
+    gap: 12px;
     text-align: left;
+    font-size: 13px;
   }
-  .option-btn:hover {
+  .clarify-opt:hover {
     border-color: var(--accent);
     background: rgba(108, 92, 231, 0.1);
-    transform: translateY(-1px);
   }
-  .option-btn:active { transform: translateY(0); }
-  .option-id {
-    width: 32px; height: 32px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
+  .clarify-opt .opt-id {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    background: var(--accent);
     color: #fff;
     display: flex; align-items: center; justify-content: center;
-    font-weight: 700; font-size: 13px;
+    font-weight: 700; font-size: 11px;
     flex-shrink: 0;
     text-transform: uppercase;
   }
-  .option-content { flex: 1; }
-  .option-label { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
-  .option-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
-  .custom-answer { margin-top: 16px; display: flex; gap: 10px; }
-  .custom-answer input {
+  .clarify-opt .opt-label { font-weight: 600; }
+  .clarify-opt .opt-desc { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .clarify-custom {
+    margin-top: 10px;
+    display: flex;
+    gap: 8px;
+  }
+  .clarify-custom input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    color: var(--text);
+    outline: none;
+  }
+  .clarify-custom input:focus { border-color: var(--accent); }
+  .clarify-custom button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .clarify-custom button:hover { opacity: 0.85; }
+
+  .input-bar {
+    border-top: 1px solid var(--border);
+    padding: 16px 20px;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .input-row {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    gap: 10px;
+  }
+  .input-row input {
     flex: 1;
     background: var(--surface2);
     border: 1.5px solid var(--border);
     border-radius: 10px;
     padding: 12px 16px;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text);
     outline: none;
   }
-  .custom-answer input:focus { border-color: var(--accent); }
-  .custom-answer button {
+  .input-row input:focus { border-color: var(--accent); }
+  .input-row button {
     background: var(--accent);
     color: #fff;
     border: none;
     border-radius: 10px;
     padding: 12px 20px;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 600;
     cursor: pointer;
-  }
-  .custom-answer button:hover { opacity: 0.85; }
-
-  .empty-state { text-align: center; padding: 80px 20px; color: var(--muted); }
-  .empty-state .icon { font-size: 64px; margin-bottom: 20px; opacity: 0.4; }
-  .empty-state h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
-  .empty-state p { font-size: 14px; max-width: 400px; margin: 0 auto; }
-
-  .result-card {
-    background: var(--surface);
-    border: 2px solid var(--green);
-    border-radius: 14px;
-    padding: 24px;
-    margin-bottom: 28px;
-    animation: slideIn 0.3s ease;
-  }
-  .result-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-  .result-icon {
-    width: 36px; height: 36px;
-    background: var(--green);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px; color: #fff;
     flex-shrink: 0;
   }
-  .result-title { font-size: 16px; font-weight: 700; color: var(--green); }
-  .result-goal {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 16px;
-    padding: 10px 14px;
-    background: var(--surface2);
-    border-radius: 8px;
-  }
-  .result-answer {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 20px;
-  }
-  .result-answer-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .result-answer-text {
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1.5;
-  }
-
-  .error-banner {
-    background: rgba(225, 112, 85, 0.12);
-    border: 1.5px solid var(--red);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 28px;
-    color: var(--red);
-    font-size: 14px;
-  }
-  @media (max-width: 600px) {
-    .container { padding: 20px 16px; }
-    .goal-row { flex-direction: column; }
-    .goal-row button { width: 100%; }
-  }
+  .input-row button:hover { opacity: 0.85; }
+  .input-row button:disabled { opacity: 0.4; cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -312,205 +223,174 @@
 <div class="header">
   <div class="logo">TP</div>
   <h1>Task Planner Agent</h1>
-  <div class="badge">LangGraph + FastAPI</div>
 </div>
 
-<div class="container">
-  <div class="input-section">
-    <label>Goal</label>
-    <div class="goal-row">
-      <input type="text" id="goalInput" placeholder="e.g. Build a REST API with auth, database, and tests" />
-      <button id="startBtn" onclick="startSession()">Plan & Execute</button>
-    </div>
+<div class="chat" id="chat">
+  <div class="msg msg-agent">
+    <div class="bubble">Hi! What would you like me to help with?</div>
   </div>
+</div>
 
-  <div id="statusBar" class="status-bar" style="display:none">
-    <div class="status-dot" id="statusDot"></div>
-    <span id="statusText">Initializing...</span>
-  </div>
-
-  <div id="errorBanner" class="error-banner" style="display:none"></div>
-
-  <div id="resultCard" class="result-card" style="display:none"></div>
-
-  <div id="clarifySection" class="clarify-section" style="display:none">
-    <div class="clarify-card">
-      <div class="clarify-header">
-        <div class="icon">?</div>
-        <div class="title">Clarification Needed</div>
-      </div>
-      <div class="clarify-body">
-        <div class="clarify-question" id="clarifyQuestion"></div>
-        <div class="clarify-context" id="clarifyContext"></div>
-        <div class="options-grid" id="optionsGrid"></div>
-        <div class="custom-answer">
-          <input type="text" id="customAnswer" placeholder="Or type your own answer..." />
-          <button onclick="submitCustomAnswer()">Send</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div id="emptyState" class="empty-state">
-    <div class="icon">🧠</div>
-    <h3>Enter a goal to get started</h3>
-    <p>The agent will break it into tasks, execute them, and ask for clarification when needed.</p>
+<div class="input-bar">
+  <div class="input-row">
+    <input type="text" id="userInput" placeholder="Ask me anything..." />
+    <button id="sendBtn" onclick="send()">Send</button>
   </div>
 </div>
 
 <script>
-let currentSessionId = null;
-let pollingInterval = null;
+let sessionId = null;
+let polling = null;
+let awaitingClarify = false;
 const API_KEY = 'dev-key';
 
-async function api(method, path, body) {
+function api(method, path, body) {
   const opts = { method, headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY } };
   if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(path, opts);
-  return res.json();
+  return fetch(path, opts).then(r => r.json());
 }
 
-function setStatus(text, type) {
-  document.getElementById('statusBar').style.display = 'flex';
-  document.getElementById('statusDot').className = 'status-dot ' + type;
-  document.getElementById('statusText').textContent = text;
+function addMsg(cls, html) {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = 'msg ' + cls;
+  div.innerHTML = '<div class="bubble">' + html + '</div>';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
 }
 
-function showError(msg) {
-  const el = document.getElementById('errorBanner');
-  el.style.display = 'block';
-  el.textContent = msg;
+function addUserMsg(text) {
+  addMsg('msg-user', text);
 }
 
-function renderResult(data) {
-  const card = document.getElementById('resultCard');
-  if (data.phase !== 'done') { card.style.display = 'none'; return; }
+function addAgentMsg(text) {
+  addMsg('msg-agent', text);
+}
 
+function addThinking(text) {
+  return addMsg('msg-thinking msg-agent', text);
+}
+
+function addClarify(data) {
+  awaitingClarify = true;
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = 'msg msg-agent';
+  div.innerHTML = `<div class="clarify-bubble">
+    <div class="clarify-q">${data.question}</div>
+    ${data.context ? '<div class="clarify-ctx">' + data.context + '</div>' : ''}
+    <div class="clarify-options">
+      ${data.options.map(o => `<div class="clarify-opt" onclick="answer('${o.id}')">
+        <div class="opt-id">${o.id}</div>
+        <div><div class="opt-label">${o.label}</div><div class="opt-desc">${o.description}</div></div>
+      </div>`).join('')}
+    </div>
+    <div class="clarify-custom">
+      <input type="text" id="clarifyInput" placeholder="Or type your own answer..." onkeydown="if(event.key==='Enter')sendCustom()" />
+      <button onclick="sendCustom()">Send</button>
+    </div>
+  </div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function showResult(data) {
   const history = data.execution_history || [];
   let answer = '';
   for (let i = history.length - 1; i >= 0; i--) {
-    const h = history[i];
-    if (h.action === 'completed' && h.output) {
-      answer = h.output;
+    if (history[i].action === 'completed' && history[i].output) {
+      answer = history[i].output;
       break;
     }
   }
-
-  if (!answer) { card.style.display = 'none'; return; }
-
-  card.style.display = 'block';
-  card.innerHTML = `
-    <div class="result-header">
-      <div class="result-icon">✓</div>
-      <div class="result-title">Result</div>
-    </div>
-    <div class="result-goal">${data.goal || ''}</div>
-    <div class="result-answer">
-      <div class="result-answer-label">Answer</div>
-      <div class="result-answer-text">${answer}</div>
-    </div>
-  `;
+  if (answer) addAgentMsg(answer);
 }
 
-function renderClarification(data) {
-  const section = document.getElementById('clarifySection');
-  if (!data || !data.pending) { section.style.display = 'none'; return; }
-  section.style.display = 'block';
-  document.getElementById('clarifyQuestion').textContent = data.question;
-  document.getElementById('clarifyContext').textContent = data.context;
-  document.getElementById('optionsGrid').innerHTML = data.options.map(o =>
-    `<div class="option-btn" onclick="submitAnswer('${o.id}')">
-      <div class="option-id">${o.id}</div>
-      <div class="option-content">
-        <div class="option-label">${o.label}</div>
-        <div class="option-desc">${o.description}</div>
-      </div>
-    </div>`
-  ).join('');
-  document.getElementById('customAnswer').value = '';
-}
+function update(data) {
+  if (data.error) addAgentMsg('Error: ' + data.error);
 
-function updateUI(data) {
-  document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('errorBanner').style.display = 'none';
-
-  if (data.error) showError(data.error);
-
-  const phase = data.phase || 'idle';
-  const labels = {
-    idle: 'Ready', planning: 'Thinking...', executing: 'Working...',
-    clarifying: 'Waiting for your input...', reviewing: 'Checking...',
-    done: 'Done!', error: 'Error'
-  };
-  const types = { idle: '', planning: 'active', executing: 'active', clarifying: 'active', reviewing: 'active', done: 'done', error: 'error' };
-  setStatus(labels[phase] || phase, types[phase] || '');
-
-  renderResult(data);
-  renderClarification(data.pending_clarification ? { pending: true, ...data.pending_clarification } : null);
-}
-
-async function startSession() {
-  const goal = document.getElementById('goalInput').value.trim();
-  if (!goal) return;
-  document.getElementById('startBtn').disabled = true;
-  document.getElementById('emptyState').style.display = 'none';
-  document.getElementById('clarifySection').style.display = 'none';
-  setStatus('Thinking...', 'active');
-
-  try {
-    const data = await api('POST', '/start', { goal });
-    currentSessionId = data.id;
-    updateUI(data);
-    startPolling();
-  } catch (e) {
-    showError('Failed to start: ' + e.message);
-    setStatus('Error', 'error');
+  if (data.phase === 'done') {
+    showResult(data);
+    stopPoll();
   }
-  document.getElementById('startBtn').disabled = false;
-}
+  if (data.phase === 'error') stopPoll();
 
-async function submitAnswer(answer) {
-  if (!currentSessionId) return;
-  setStatus('Working on it...', 'active');
-  document.getElementById('clarifySection').style.display = 'none';
-  try {
-    const data = await api('POST', '/clarify', { session_id: currentSessionId, answer });
-    updateUI(data);
-  } catch (e) {
-    showError('Failed: ' + e.message);
+  if (data.pending_clarification) {
+    addClarify(data.pending_clarification);
   }
 }
 
-function submitCustomAnswer() {
-  const input = document.getElementById('customAnswer');
-  const answer = input.value.trim();
-  if (answer) submitAnswer(answer);
-}
+async function send() {
+  const input = document.getElementById('userInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  addUserMsg(text);
+  document.getElementById('sendBtn').disabled = true;
+  const think = addThinking('Thinking...');
 
-document.getElementById('customAnswer').addEventListener('keydown', e => {
-  if (e.key === 'Enter') submitCustomAnswer();
-});
-
-async function pollStatus() {
-  if (!currentSessionId) return;
   try {
-    const data = await api('GET', `/status/${currentSessionId}`);
-    updateUI(data);
-    if (data.phase === 'done' || data.phase === 'error') stopPolling();
-  } catch (e) { /* ignore */ }
+    if (awaitingClarify && sessionId) {
+      awaitingClarify = false;
+      const data = await api('POST', '/clarify', { session_id: sessionId, answer: text });
+      think.remove();
+      update(data);
+    } else {
+      const data = await api('POST', '/start', { goal: text });
+      sessionId = data.id;
+      think.remove();
+      update(data);
+      startPoll();
+    }
+  } catch (e) {
+    think.remove();
+    addAgentMsg('Something went wrong. Try again.');
+  }
+  document.getElementById('sendBtn').disabled = false;
 }
 
-function startPolling() {
-  stopPolling();
-  pollingInterval = setInterval(pollStatus, 2000);
+async function answer(id) {
+  if (!sessionId) return;
+  awaitingClarify = false;
+  addUserMsg(id);
+  const think = addThinking('Working on it...');
+  try {
+    const data = await api('POST', '/clarify', { session_id: sessionId, answer: id });
+    think.remove();
+    update(data);
+  } catch (e) {
+    think.remove();
+    addAgentMsg('Something went wrong. Try again.');
+  }
 }
 
-function stopPolling() {
-  if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+function sendCustom() {
+  const input = document.getElementById('clarifyInput');
+  if (!input) return;
+  const text = input.value.trim();
+  if (text) answer(text);
 }
 
-document.getElementById('goalInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') startSession();
+async function poll() {
+  if (!sessionId) return;
+  try {
+    const data = await api('GET', `/status/${sessionId}`);
+    update(data);
+  } catch (e) {}
+}
+
+function startPoll() {
+  stopPoll();
+  polling = setInterval(poll, 2000);
+}
+
+function stopPoll() {
+  if (polling) { clearInterval(polling); polling = null; }
+}
+
+document.getElementById('userInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') send();
 });
 </script>
 </body>
