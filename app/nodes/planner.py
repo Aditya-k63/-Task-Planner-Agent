@@ -68,30 +68,35 @@ def planner_node(state: AgentState) -> dict:
 
 
 def _planner_node_inner(state: AgentState) -> dict:
+    logger.info("PLANNER: step 1 - get llm")
     llm = get_llm()
 
+    logger.info("PLANNER: step 2 - get tools")
     from app.tools.registry import registry
     tools = ", ".join(t.name for t in registry.list_tools())
 
+    logger.info("PLANNER: step 3 - build messages")
     system_msg = PLANNER_SYSTEM.format(tools=tools)
     messages = [
         SystemMessage(content=system_msg),
-        HumanMessage(content=f"Goal: {state['goal']}\n\nCreate a task plan. Respond with JSON only."),
+        HumanMessage(content=f"Goal: {state.get('goal', '')}\n\nCreate a task plan. Respond with JSON only."),
     ]
 
+    logger.info("PLANNER: step 4 - invoke llm")
     response = llm.invoke(messages)
-    # Handle both string and list content formats
+
+    logger.info("PLANNER: step 5 - extract content")
     content = response.content
     if isinstance(content, list):
-        # Extract text from content blocks
         raw = " ".join(
             block.get("text", "") if isinstance(block, dict) else str(block)
             for block in content
         ).strip()
     else:
         raw = str(content).strip()
-    logger.info(f"PLANNER raw response (first 500): {raw[:500]}")
+    logger.info(f"PLANNER raw response: {repr(raw[:500])}")
 
+    logger.info("PLANNER: step 6 - strip code fences")
     # Strip markdown code fences if present
     if "```" in raw:
         parts = raw.split("```")
@@ -101,38 +106,27 @@ def _planner_node_inner(state: AgentState) -> dict:
                 raw = raw[4:].strip()
             if raw.endswith("```"):
                 raw = raw[:-3].strip()
-        logger.info(f"PLANNER after fence strip: {raw[:300]}")
 
-    # Extract JSON object if surrounded by other text
+    logger.info("PLANNER: step 7 - extract JSON object")
     start = raw.find("{")
     end = raw.rfind("}")
-    logger.info(f"PLANNER JSON search: start={start}, end={end}")
     if start != -1 and end != -1 and end > start:
         raw = raw[start:end + 1]
-        logger.info(f"PLANNER extracted JSON: {raw[:300]}")
 
+    logger.info(f"PLANNER: step 8 - parse JSON: {repr(raw[:200])}")
     try:
         data = json.loads(raw)
         tasks_raw = data.get("tasks", [])
-    except json.JSONDecodeError:
-        logger.error(f"Planner returned invalid JSON: {raw[:300]}")
-        # Fallback: try to extract tasks array via regex
-        tasks_match = re.search(r'"tasks"\s*:\s*(\[.*?\])', raw, re.DOTALL)
-        if tasks_match:
-            try:
-                tasks_raw = json.loads(tasks_match.group(1))
-                logger.info(f"PLANNER: Extracted tasks via regex fallback")
-            except json.JSONDecodeError:
-                return {
-                    "phase": AgentPhase.ERROR.value,
-                    "error": f"Planner returned invalid JSON: {raw[:300]}",
-                }
-        else:
-            return {
-                "phase": AgentPhase.ERROR.value,
-                "error": f"Planner returned invalid JSON: {raw[:300]}",
-            }
+        logger.info(f"PLANNER: step 9 - got {len(tasks_raw)} raw tasks")
+    except json.JSONDecodeError as e:
+        logger.error(f"PLANNER: JSON parse failed: {e}")
+        logger.error(f"PLANNER: raw content: {repr(raw[:500])}")
+        return {
+            "phase": AgentPhase.ERROR.value,
+            "error": f"Planner returned invalid JSON: {raw[:300]}",
+        }
 
+    logger.info("PLANNER: step 10 - parse tasks")
     tasks: list[Task] = []
     for i, t in enumerate(tasks_raw):
         if not isinstance(t, dict):
@@ -156,6 +150,8 @@ def _planner_node_inner(state: AgentState) -> dict:
             status=TaskStatus.PENDING,
         )
         tasks.append(task)
+
+    logger.info(f"PLANNER: step 11 - created {len(tasks)} tasks")
 
     if not tasks:
         return {
