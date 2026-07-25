@@ -1,118 +1,121 @@
 # Task Planner Agent
 
-> **AI agent that autonomously decomposes goals into dependency DAGs, executes tasks with tools, and adapts via interactive clarification — all through a real-time web UI.**
+An AI agent that takes a high-level goal, breaks it into smaller tasks, figures out the order to do them in, and executes them one by one — using real tools like file operations, shell commands, and web search.
 
-## What It Does
+But here's the interesting part: if the agent gets stuck or needs your input mid-execution, it pauses and shows you **3 clear options** to choose from in a clean UI. You pick one, and it keeps going.
 
-Given a high-level goal, the agent:
-1. **Plans** — breaks the goal into ordered, prioritized subtasks with dependency tracking
-2. **Executes** — uses tools (file ops, shell, web search, URL fetch) to complete each task
-3. **Clarifies** — detects ambiguity mid-execution and presents 3 contextual options via interactive UI
-4. **Reviews** — LLM-based review verifies task completion before proceeding
-5. **Replans** — dynamically adjusts the plan when tasks fail or dependencies change
+## How It Works
 
-## Architecture
+You give it a goal like *"Build a REST API with authentication and tests"*. Here's what happens behind the scenes:
 
-```
-User Goal
-    │
-    ▼
-┌─────────┐     ┌─────────┐     ┌───────────┐
-│ Planner │────▶│ Router  │────▶│ Executor  │
-│ (LLM)   │◀────│         │◀────│ (LLM+    │
-└─────────┘     └────┬────┘     │  Tools)   │
-                     │          └─────┬─────┘
-                     ▼                │
-                   DONE          ┌────┴────┐
-                                 ▼         ▼
-                           ┌──────────┐ ┌──────────┐
-                           │ Reviewer │ │Clarifier │
-                           │ (LLM)   │ │(3-option │
-                           └──────────┘ │  UI)     │
-                                        └──────────┘
-```
+1. **Planning** — An LLM breaks your goal into concrete subtasks with dependencies. It figures out that you need to create the database schema before you can add authentication, and so on.
 
-## Tech Stack
+2. **Execution** — The agent picks up each task and uses tools to complete it. It can read and write files, run shell commands, search the web, and fetch URLs.
 
-- **LangGraph** — StateGraph-based agent orchestration with conditional edges
-- **FastAPI** — async API endpoints for session management
-- **LangChain + Groq** — LLM inference via llama-3.1-8b-instant
-- **Pydantic** — typed state schema with validation
-- **Custom Tool System** — registry pattern with lazy loading, concurrent-safe execution
+3. **Clarification** — When the agent hits something ambiguous (like "which database should I use?"), it doesn't guess. Instead, it shows you a card with 3 options:
 
-## Key Features
+   ```
+   ┌─────────────────────────────────────────────┐
+   │  CLARIFICATION NEEDED                       │
+   │                                             │
+   │  Which database should I use for auth?      │
+   │                                             │
+   │  ┌─────────────────────────────────────┐    │
+   │  │ a │ SQLite + bcrypt                 │    │
+   │  │   │ Simple, file-based              │    │
+   │  ├───┼─────────────────────────────────┤    │
+   │  │ b │ PostgreSQL + JWT                │    │
+   │  │   │ Production-ready, scalable      │    │
+   │  ├───┼─────────────────────────────────┤    │
+   │  │ c │ Firebase Auth                   │    │
+   │  │   │ Fully managed, no backend       │    │
+   │  └─────────────────────────────────────┘    │
+   └─────────────────────────────────────────────┘
+   ```
 
-| Feature | Implementation |
-|---------|---------------|
-| **Task DAG** | Dependency graph with priority levels, auto-scheduling of unblocked tasks |
-| **Adaptive Clarification** | Executor detects ambiguity → presents 3 concrete options → pauses → resumes on user answer |
-| **Tool Registry** | Plugin architecture — add new tools by registering a function |
-| **LLM Review** | Automated quality check after each task, retry on failure |
-| **Real-time UI** | SSE-like polling, dark theme, task progress visualization |
+   You click an option (or type your own answer), and the agent continues with that context.
 
-## Resume Highlights
+4. **Review** — After each task, an LLM reviews whether it was actually completed correctly. If not, it retries or replans.
 
-- Built a multi-agent task planner using LangGraph StateGraph with autonomous task decomposition and dependency DAGs
-- Implemented adaptive clarification system — agent detects ambiguity and presents contextual 3-option choices via interactive UI
-- Designed modular tool registry with lazy-loaded, concurrent-safe tools (file ops, shell, search, web)
-- Deployed on Render with Docker, PostgreSQL-ready persistence, and CI/CD pipeline
+5. **Completion** — Once all tasks are done, you get a summary of everything that was accomplished.
 
-## Quick Start
+## The Tech
+
+- **LangGraph** — Orchestrates the agent loop using a state machine (StateGraph). Each node (planner, executor, reviewer, router) is a step in the graph, with conditional edges that determine what happens next.
+
+- **FastAPI** — Powers the API endpoints and serves the web UI. Everything runs as a single service.
+
+- **LangChain + Groq** — The LLM backbone. Uses Groq's free tier for fast inference (currently llama-3.3-70b via OpenRouter). Supports OpenRouter free models too.
+
+- **Custom Tool System** — Tools are registered in a plugin-style registry. Each tool is just a function that takes a string and returns a string. New tools can be added by dropping a file in the tools folder.
+
+## Getting Started
 
 ```bash
-# Local
-pip install -r requirements.txt
-cp .env.example .env  # add your GROQ_API_KEY
-uvicorn app.main:app --reload
+# Clone the repo
+git clone https://github.com/Aditya-k63/-Task-Planner-Agent.git
+cd -Task-Planner-Agent
 
-# Docker
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up your API key
+cp .env.example .env
+# Edit .env and add your GROQ_API_KEY or OPENROUTER_API_KEY
+
+# Run it
+uvicorn app.main:app --reload
+```
+
+Open [http://localhost:8000](http://localhost:8000) in your browser.
+
+### Using Docker
+
+```bash
 docker build -t task-planner-agent .
 docker run -p 8000:8000 --env-file .env task-planner-agent
 ```
 
-Open http://localhost:8000
+## API Endpoints
 
-## API
-
-| Endpoint | Method | Description |
+| Endpoint | Method | What it does |
 |----------|--------|-------------|
-| `/` | GET | Web UI |
-| `/start` | POST | `{goal, session_id?}` — start planning |
-| `/status/{id}` | GET | Get session state |
-| `/clarify/{id}` | GET | Get pending clarification |
-| `/clarify` | POST | `{session_id, answer}` — answer clarification |
-| `/sessions` | List all sessions |
-| `/health` | Health check |
+| `/` | GET | The web UI |
+| `/start` | POST | Send a goal, get back a session with tasks |
+| `/status/{id}` | GET | Check what the agent is doing right now |
+| `/clarify/{id}` | GET | Get the pending question (if any) |
+| `/clarify` | POST | Answer a clarification question |
+| `/sessions` | GET | List all active sessions |
+| `/health` | GET | Health check |
 
 ## Project Structure
 
 ```
 Task-Planner-Agent/
 ├── app/
-│   ├── main.py              # FastAPI app + endpoints
-│   ├── config.py            # Settings (pydantic-settings)
-│   ├── state.py             # TypedDict schemas (AgentState, Task, Clarification)
-│   ├── graph.py             # LangGraph StateGraph wiring
-│   ├── llm.py               # LLM factory (Groq/OpenAI)
+│   ├── main.py              # FastAPI app and endpoints
+│   ├── config.py            # Environment settings
+│   ├── state.py             # Data schemas (AgentState, Task, Clarification)
+│   ├── graph.py             # LangGraph wiring — connects all nodes
+│   ├── llm.py               # LLM provider setup (Groq/OpenRouter)
 │   ├── nodes/
-│   │   ├── planner.py       # Goal → task DAG
-│   │   ├── executor.py      # Tool-use loop + clarify detection
-│   │   ├── reviewer.py      # LLM-based task verification
-│   │   ├── router.py        # Next-action decision
-│   │   └── clarifier.py     # 3-option clarification handler
+│   │   ├── planner.py       # Turns goals into task lists
+│   │   ├── executor.py      # Runs tools and detects when to ask for help
+│   │   ├── reviewer.py      # Checks if tasks were done correctly
+│   │   ├── router.py        # Decides what to do next
+│   │   └── clarifier.py     # Handles the 3-option question flow
 │   ├── tools/
-│   │   ├── registry.py      # Tool registry + dispatch
-│   │   ├── file_ops.py      # read/write/list/search files
-│   │   ├── shell.py         # Sandboxed shell execution
-│   │   ├── search.py        # Web search (Tavily/Wikipedia)
-│   │   └── web.py           # URL fetch
+│   │   ├── registry.py      # Tool registration and dispatch
+│   │   ├── file_ops.py      # Read, write, list, search files
+│   │   ├── shell.py         # Run shell commands safely
+│   │   ├── search.py        # Search the web
+│   │   └── web.py           # Fetch URLs
 │   └── memory/
-│       └── sessions.py      # In-memory session store
+│       └── sessions.py      # Store session data
 ├── static/
-│   └── index.html           # Dark-theme interactive UI
-├── tests/
+│   └── index.html           # The web UI
+├── tests/                   # Unit tests
 ├── Dockerfile
-├── render.yaml
 ├── requirements.txt
 └── .github/workflows/ci.yml
 ```
