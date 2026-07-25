@@ -241,6 +241,56 @@
   .empty-state h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
   .empty-state p { font-size: 14px; max-width: 400px; margin: 0 auto; }
 
+  .result-card {
+    background: var(--surface);
+    border: 2px solid var(--green);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 28px;
+    animation: slideIn 0.3s ease;
+  }
+  .result-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .result-icon {
+    width: 36px; height: 36px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; color: #fff;
+    flex-shrink: 0;
+  }
+  .result-title { font-size: 16px; font-weight: 700; color: var(--green); }
+  .result-goal {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-radius: 8px;
+  }
+  .result-answer {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .result-answer-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .result-answer-text {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
   .error-banner {
     background: rgba(225, 112, 85, 0.12);
     border: 1.5px solid var(--red);
@@ -280,6 +330,8 @@
   </div>
 
   <div id="errorBanner" class="error-banner" style="display:none"></div>
+
+  <div id="resultCard" class="result-card" style="display:none"></div>
 
   <div id="clarifySection" class="clarify-section" style="display:none">
     <div class="clarify-card">
@@ -330,6 +382,36 @@ function showError(msg) {
   el.textContent = msg;
 }
 
+function renderResult(data) {
+  const card = document.getElementById('resultCard');
+  if (data.phase !== 'done') { card.style.display = 'none'; return; }
+
+  const history = data.execution_history || [];
+  let answer = '';
+  for (let i = history.length - 1; i >= 0; i--) {
+    const h = history[i];
+    if (h.action === 'completed' && h.output) {
+      answer = h.output;
+      break;
+    }
+  }
+
+  if (!answer) { card.style.display = 'none'; return; }
+
+  card.style.display = 'block';
+  card.innerHTML = `
+    <div class="result-header">
+      <div class="result-icon">✓</div>
+      <div class="result-title">Result</div>
+    </div>
+    <div class="result-goal">${data.goal || ''}</div>
+    <div class="result-answer">
+      <div class="result-answer-label">Answer</div>
+      <div class="result-answer-text">${answer}</div>
+    </div>
+  `;
+}
+
 function renderClarification(data) {
   const section = document.getElementById('clarifySection');
   if (!data || !data.pending) { section.style.display = 'none'; return; }
@@ -363,6 +445,7 @@ function updateUI(data) {
   const types = { idle: '', planning: 'active', executing: 'active', clarifying: 'active', reviewing: 'active', done: 'done', error: 'error' };
   setStatus(labels[phase] || phase, types[phase] || '');
 
+  renderResult(data);
   renderClarification(data.pending_clarification ? { pending: true, ...data.pending_clarification } : null);
 }
 
