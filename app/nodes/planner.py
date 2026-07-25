@@ -71,19 +71,31 @@ def planner_node(state: AgentState) -> dict:
     raw = response.content.strip()
 
     # Strip markdown code fences if present
-    if raw.startswith("```"):
-        lines = raw.split("\n")
-        raw = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
-        raw = raw.strip()
+    if "```" in raw:
+        parts = raw.split("```")
+        if len(parts) >= 3:
+            raw = parts[1].strip()
+            # Remove optional language tag (json, etc.)
+            if raw.startswith(("json", "JSON")):
+                raw = raw[4:].strip()
+            # Remove trailing content after last fence
+            if raw.endswith("```"):
+                raw = raw[:-3].strip()
+
+    # Extract JSON object if surrounded by other text
+    start = raw.find("{")
+    end = raw.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        raw = raw[start:end + 1]
 
     try:
         data = json.loads(raw)
         tasks_raw = data.get("tasks", [])
     except json.JSONDecodeError:
-        logger.error(f"Planner returned invalid JSON: {raw[:200]}")
+        logger.error(f"Planner returned invalid JSON: {raw[:300]}")
         return {
             "phase": AgentPhase.ERROR.value,
-            "error": f"Planner returned invalid JSON: {raw[:200]}",
+            "error": f"Planner returned invalid JSON: {raw[:300]}",
         }
 
     tasks: list[Task] = []

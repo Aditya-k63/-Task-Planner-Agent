@@ -68,10 +68,20 @@ Did this task succeed? Respond with JSON only."""),
     raw = response.content.strip()
 
     # Strip markdown fences
-    if raw.startswith("```"):
-        lines = raw.split("\n")
-        raw = "\n".join(lines[1:-1] if lines[-1].strip() == "```" else lines[1:])
-        raw = raw.strip()
+    if "```" in raw:
+        parts = raw.split("```")
+        if len(parts) >= 3:
+            raw = parts[1].strip()
+            if raw.startswith(("json", "JSON")):
+                raw = raw[4:].strip()
+            if raw.endswith("```"):
+                raw = raw[:-3].strip()
+
+    # Extract JSON object
+    start = raw.find("{")
+    end = raw.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        raw = raw[start:end + 1]
 
     try:
         data = json.loads(raw)
@@ -79,10 +89,10 @@ Did this task succeed? Respond with JSON only."""),
         score = data.get("score", 0.0)
         reason = data.get("reason", "")
     except json.JSONDecodeError:
-        logger.error(f"Reviewer returned invalid JSON: {raw[:200]}")
+        logger.error(f"Reviewer returned invalid JSON: {raw[:300]}")
         passed = False
         score = 0.0
-        reason = f"Review parse error: {raw[:200]}"
+        reason = f"Review parse error: {raw[:300]}"
 
     logger.info(f"REVIEWER: pass={passed}, score={score:.2f}, reason={reason[:100]}")
 
