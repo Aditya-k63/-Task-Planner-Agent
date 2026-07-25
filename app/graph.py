@@ -26,7 +26,9 @@ logger = logging.getLogger(__name__)
 # --- Edge conditions ---
 
 def after_planner(state: AgentState) -> Literal["router", "__end__"]:
-    if state["phase"] == AgentPhase.ERROR.value:
+    phase = state.get("phase", "")
+    logger.info(f"after_planner: phase={phase}")
+    if phase == AgentPhase.ERROR.value:
         return "__end__"
     return "router"
 

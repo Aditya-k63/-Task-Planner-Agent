@@ -90,11 +90,13 @@ async def start(req: StartRequest, request: Request):
         graph = get_graph()
         initial_state = session.state
         result = graph.invoke(initial_state)
+        logger.info(f"Graph result keys: {list(result.keys()) if isinstance(result, dict) else type(result)}")
         # Update session state with graph result
-        for k, v in result.items():
-            session.state[k] = v
+        if isinstance(result, dict):
+            for k, v in result.items():
+                session.state[k] = v
     except Exception as e:
-        logger.error(f"Planner failed: {e}")
+        logger.error(f"Planner failed: {type(e).__name__}: {e}")
         session.state["phase"] = AgentPhase.ERROR.value
         session.state["error"] = str(e)
 
