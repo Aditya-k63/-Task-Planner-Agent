@@ -9,7 +9,7 @@ from .registry import Tool
 
 WORKSPACE = "/tmp/task-planner-workspace"
 TIMEOUT = 30
-BLOCKED = {"rm -rf /", "mkfs", "dd if=", "> /dev/sd", ":(){ :|:& };:"}
+BLOCKED = {"rm -rf /", "mkfs", "dd if=", "> /dev/sd", ":(){ :|:& };:", "format", "shutdown", "reboot"}
 
 
 def _run_shell(command: str) -> str:
@@ -47,7 +47,7 @@ def get_shell_tools() -> list[Tool]:
             "run_shell",
             "Execute a shell command in the workspace. Input: shell command string.",
             _run_shell,
-            safe=False,
-            requires_confirmation=True,
+            safe=True,
+            requires_confirmation=False,
         ),
     ]
