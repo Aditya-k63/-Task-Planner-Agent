@@ -4,6 +4,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     groq_api_key: str = ""
+    openrouter_api_key: str = ""
     llm_provider: str = "groq"
     llm_model: str = "llama-3.1-8b-instant"
     api_key: str = "dev-key"

@@ -18,7 +18,23 @@ def get_llm():
     from app.config import get_settings
     settings = get_settings()
 
-    if settings.llm_provider == "groq" and settings.groq_api_key:
+    # OpenRouter (free models)
+    if settings.openrouter_api_key:
+        try:
+            from langchain_openai import ChatOpenAI
+            logger.info(f"Using OpenRouter model: {settings.llm_model}")
+            return ChatOpenAI(
+                api_key=settings.openrouter_api_key,
+                base_url="https://openrouter.ai/api/v1",
+                model=settings.llm_model,
+                temperature=0.3,
+                max_tokens=4096,
+            )
+        except ImportError:
+            logger.warning("langchain-openai not installed for OpenRouter")
+
+    # Groq
+    if settings.groq_api_key:
         try:
             from langchain_groq import ChatGroq
             logger.info(f"Using Groq model: {settings.llm_model}")
@@ -31,11 +47,4 @@ def get_llm():
         except ImportError:
             logger.warning("langchain-groq not installed, trying OpenAI")
 
-    from langchain_openai import ChatOpenAI
-    import os
-    api_key = os.environ.get("OPENAI_API_KEY", "")
-    if api_key:
-        logger.info("Using OpenAI fallback")
-        return ChatOpenAI(model="gpt-4o-mini", temperature=0.3)
-
-    raise RuntimeError("No LLM provider configured. Set GROQ_API_KEY or OPENAI_API_KEY.")
+    raise RuntimeError("No LLM provider configured. Set GROQ_API_KEY or OPENROUTER_API_KEY.")
