@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     groq_api_key: str = ""
     openrouter_api_key: str = ""
     llm_provider: str = "groq"
-    llm_model: str = "llama-3.1-8b-instant"
+    llm_model: str = "nvidia/nemotron-3-super-120b-a12b:free"
     api_key: str = "dev-key"
     port: int = 8000
     max_retries: int = 3
