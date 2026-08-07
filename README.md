@@ -1,4 +1,4 @@
-# Task Planner Agent
+# Autonomous-Task-Planning-System
 
 An AI agent that takes a high-level goal, breaks it into smaller tasks, figures out the order to do them in, and executes them one by one — using real tools like file operations, shell commands, and web search.
 
@@ -91,7 +91,7 @@ docker run -p 8000:8000 --env-file .env task-planner-agent
 ## Project Structure
 
 ```
-Task-Planner-Agent/
+Autonomous-Task-Planning-System/
 ├── app/
 │   ├── main.py              # FastAPI app and endpoints
 │   ├── config.py            # Environment settings
